@@ -9,7 +9,7 @@ import lombok.*;
 
 public class UserLoginResponse {
     @JsonProperty("token")
-    private String accsessToken;
+    private String accessToken;
 
     @JsonProperty("user")
     private User user;

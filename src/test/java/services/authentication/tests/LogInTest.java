@@ -21,11 +21,14 @@ public class LogInTest extends UsersBaseTest {
    @Test
    public void loginSmokeTest(){
       UserLoginRequest requestBody = RequestBodyCreator.createUserLoginBodyRequest(email, password);
-      UserLoginResponse responseBody = BodyDeserialize.deserializeResponseLoginBodyToJavaObject(requestBody);
+      UserLoginResponse responseBody = LoginStep.loginAndGetResponseBody(requestBody);
       assertAll(
-              ()->assertNotNull(responseBody.getAccsessToken())
+              ()->assertNotNull(responseBody.getAccessToken())
       );
-
+      UserLoginResponse.User currentUser = GetUserDataWithToken.getCurrentUser(responseBody.getAccessToken());
+      assertAll(
+              ()->assertNotNull(currentUser,"Пользователь не может быть Null")
+      );
 
 
    }
