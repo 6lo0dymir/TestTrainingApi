@@ -14,13 +14,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @Owner("Терехин Владимир")
 @DisplayName("Тест аутентификации")
 public class LogInTest extends UsersBaseTest {
-   String email = Credentials.email;
-   String password = Credentials.password;
 
-   @DisplayName("Проверка логина и получения токена")
+   @DisplayName("Аутентификация, получение токена, получение данных пользователя по токену")
    @Test
    public void loginSmokeTest(){
-      UserLoginRequest requestBody = RequestBodyCreator.createUserLoginBodyRequest(email, password);
+      UserLoginRequest requestBody = RequestBodyCreator.createUserLoginBodyRequest(Credentials.email, Credentials.password);
       UserLoginResponse responseBody = LoginStep.loginAndGetResponseBody(requestBody);
       assertAll(
               ()->assertNotNull(responseBody.getAccessToken())
@@ -29,9 +27,9 @@ public class LogInTest extends UsersBaseTest {
       assertAll(
               ()->assertNotNull(currentUser,"Пользователь не может быть Null")
       );
-
-
    }
+
+
 
 
 

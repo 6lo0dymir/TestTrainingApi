@@ -14,9 +14,9 @@ public class GetUserDataWithToken extends UsersBaseTest {
 
         RequestSpecification spec = getAuthSpec().header("Authorization","Bearer " + token);
 
-        Response response = method.executeMethod(spec,"me",MethodSelector.Methods.GET);
+        Response rs = method.executeMethod(spec,"me",MethodSelector.Methods.GET);
 
-        return response
+        return rs
                 .then()
                 .statusCode(200)
                 .extract()
