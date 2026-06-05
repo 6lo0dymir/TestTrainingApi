@@ -9,6 +9,7 @@ import services.utils.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@DisplayName("Тест на создание нового контакта")
 public class CreateContactTest extends ContactsBaseTest {
 
     private static String token;

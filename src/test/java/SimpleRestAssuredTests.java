@@ -14,6 +14,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 @Epic("Базовые тесты RESTassured")
 @Owner("Терехин Владимир")
+@DisplayName("Прямые тесты RESTassured")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SimpleRestAssuredTests {
     private static String baseUrl;
