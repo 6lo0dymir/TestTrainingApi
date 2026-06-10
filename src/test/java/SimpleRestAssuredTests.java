@@ -21,11 +21,11 @@ public class SimpleRestAssuredTests {
     private static Map <String,String> credentials;
     private static String token;
     private static String contactId;
-    private static List<String> createdContactIds = new ArrayList<>();
+
 
     @BeforeAll
     public static void setUp(){
-        createdContactIds = new ArrayList<>();
+
         String baseUrl = "https://thinking-tester-contact-list.herokuapp.com";
         baseUserPath = "/users";
         baseContactPath = "/contacts";
@@ -120,7 +120,7 @@ public class SimpleRestAssuredTests {
         newContact.put("country", "USA");
 
 
-        String newContactID = given()
+        given()
                 .basePath(baseContactPath)
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
@@ -137,7 +137,7 @@ public class SimpleRestAssuredTests {
                 .body("phone",equalTo(newContact.get("phone")))
                 .extract()
                 .path("_id");
-        createdContactIds.add(newContactID);
+
     }
 
     @DisplayName("Находим id контакта по email")
@@ -204,21 +204,6 @@ public class SimpleRestAssuredTests {
                 .statusCode(200);
     }
 
-//    @AfterAll
-//    /** Очистка БД после тестов по списку созданных id */
-//    public static void cleanUp(){
-//        for (String id : createdContactIds){
-//            try{
-//                given()
-//                        .basePath(baseContactPath)
-//                        .header("Authorization", "Bearer "+ token)
-//                        .when()
-//                        .delete("/" + id)
-//                        .then()
-//                        .statusCode(200);
-//            }catch (Exception e){
-//                System.err.println("Не удалось удалить контакт");
-//            }
-//        }
+
     }
 
