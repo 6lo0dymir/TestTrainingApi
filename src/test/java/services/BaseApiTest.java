@@ -15,7 +15,7 @@ public class BaseApiTest {
             .getOrDefault("BASE_API_URL","https://thinking-tester-contact-list.herokuapp.com");
 
     @BeforeAll
-    public static void setup() {
+    public static void setUp() {
         RestAssured.baseURI = BASE_API_URL;
         RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter(), new AllureRestAssured());
     }

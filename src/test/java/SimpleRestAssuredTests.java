@@ -6,7 +6,6 @@ import org.junit.jupiter.api.*;
 
 import java.util.*;
 
-import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.equalTo;
@@ -17,20 +16,20 @@ import static org.hamcrest.Matchers.equalTo;
 @DisplayName("Прямые тесты RESTassured")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SimpleRestAssuredTests {
-    private static String baseUrl;
     private static String baseUserPath;
     private static String baseContactPath;
     private static Map <String,String> credentials;
     private static String token;
     private static String contactId;
-    private static String targetEmail;
+    private static List<String> createdContactIds = new ArrayList<>();
 
     @BeforeAll
-    public static void SetUp(){
-        baseUrl = "https://thinking-tester-contact-list.herokuapp.com";
+    public static void setUp(){
+        createdContactIds = new ArrayList<>();
+        String baseUrl = "https://thinking-tester-contact-list.herokuapp.com";
         baseUserPath = "/users";
         baseContactPath = "/contacts";
-        targetEmail="john.doe@example.com";
+        String targetEmail = "john.doe@example.com";
         io.restassured.RestAssured.baseURI = baseUrl;
         /** Создаем тело запроса JSON */
         Map<String, String> credentials = Map.of(
@@ -43,11 +42,9 @@ public class SimpleRestAssuredTests {
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body(credentials)
-                .log().all()
                 .when()
                 .post("/login")
                 .then()
-                .log().all()
                 .statusCode(200)
                 .extract()
                 .path("token");
@@ -56,11 +53,9 @@ public class SimpleRestAssuredTests {
                 .basePath(baseContactPath)
                 .accept(ContentType.JSON)
                 .header("Authorization","Bearer "+token)
-                .log().all()
                 .when()
                 .get()
                 .then()
-                .log().all()
                 .statusCode(200)
                 .extract()
                 .path("find {it.email == '" + targetEmail + "'}._id");
@@ -79,11 +74,9 @@ public class SimpleRestAssuredTests {
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body(credentials)
-                .log().all()
                     .when()
                 .post("/login")
                     .then()
-                .log().all()
                 .statusCode(200)
                 .body("token", notNullValue())
                 .body("user", notNullValue())
@@ -102,7 +95,6 @@ public class SimpleRestAssuredTests {
                 .when()
                 .get("/me")
                 .then()
-                .log().all()
                 .statusCode(200)
                 .body("_id", notNullValue())
                 .body("email", equalTo("kennymc666@gmail.com"))
@@ -127,24 +119,25 @@ public class SimpleRestAssuredTests {
         newContact.put("postalCode", "10001");
         newContact.put("country", "USA");
 
-        given()
+
+        String newContactID = given()
                 .basePath(baseContactPath)
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .header("Authorization", "Bearer "+token)
                 .body(newContact)
-                .log().all()
                 .when()
                 .post("")
                 .then()
-                .log().all()
                 .statusCode(201)
                 .body("_id", notNullValue())
                 .body("firstName", equalTo(newContact.get("firstName")))
                 .body("lastName", equalTo(newContact.get("lastName")))
                 .body("email",equalTo(newContact.get("email")))
                 .body("phone",equalTo(newContact.get("phone")))
-                ;
+                .extract()
+                .path("_id");
+        createdContactIds.add(newContactID);
     }
 
     @DisplayName("Находим id контакта по email")
@@ -156,11 +149,9 @@ public class SimpleRestAssuredTests {
                 .basePath(baseContactPath)
                 .accept(ContentType.JSON)
                 .header("Authorization","Bearer "+token)
-                .log().all()
                 .when()
                 .get()
                 .then()
-                .log().all()
                 .statusCode(200)
                 .extract()
                 .path("find {it.email == '" + targetEmail + "'}._id");
@@ -169,11 +160,9 @@ public class SimpleRestAssuredTests {
                 .basePath(baseContactPath)
                 .accept(ContentType.JSON)
                 .header("Authorization", "Bearer "+token)
-                .log().all()
                 .when()
                 .get("/"+contactId)
                 .then()
-                .log().all()
                 .statusCode(200)
                 .body("email",equalTo(targetEmail));
     }
@@ -191,11 +180,9 @@ public class SimpleRestAssuredTests {
                 .accept(ContentType.JSON)
                 .header("Authorization","Bearer "+token)
                 .body(newContactData)
-                .log().all()
                 .when()
                 .patch("/"+contactId)
                 .then()
-                .log().all()
                 .statusCode(200)
                 .body("firstName",equalTo(newContactData.get("firstName")))
                 .body("lastName",equalTo(newContactData.get("lastName")))
@@ -217,8 +204,21 @@ public class SimpleRestAssuredTests {
                 .statusCode(200);
     }
 
+//    @AfterAll
+//    /** Очистка БД после тестов по списку созданных id */
+//    public static void cleanUp(){
+//        for (String id : createdContactIds){
+//            try{
+//                given()
+//                        .basePath(baseContactPath)
+//                        .header("Authorization", "Bearer "+ token)
+//                        .when()
+//                        .delete("/" + id)
+//                        .then()
+//                        .statusCode(200);
+//            }catch (Exception e){
+//                System.err.println("Не удалось удалить контакт");
+//            }
+//        }
+    }
 
-
-
-
-}
